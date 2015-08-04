@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+	
+	<record model="workflow" id="wkf_asset_purchase_request">
+		<field name="name">hr.wkf.asset.purchase</field>
+		<field name="osv">hr.seeed.asset.purchase.request</field>
+		<field name="on_create">True</field>
+	</record>
+
+	<record model="workflow.activity" id="act_draft1">
+		<field name="wkf_id" ref="wkf_asset_purchase_request" />
+		<field name="flow_start">True</field>
+		<field name="name">draft</field>
+		<field name="kind">function</field>
+		<field name="action">action_draft()</field>
+	</record>
+
+	<record model="workflow.activity" id="act_approving">
+		<field name="wkf_id" ref="wkf_asset_purchase_request" />
+		<field name="name">dep_approving</field>
+		<field name="kind">function</field>
+		<field name="action">action_submit()</field>
+	</record>
+
+	<record model="workflow.activity" id="act_ceo_approving">
+		<field name="wkf_id" ref="wkf_asset_purchase_request" />
+		<field name="name">ceo_approving</field>
+		<field name="kind">function</field>
+		<field name="action">action_confirm()</field>
+	</record>
+	
+	<record model="workflow.activity" id="act_it_confirm">
+		<field name="wkf_id" ref="wkf_asset_purchase_request" />
+		<field name="name">it_confirming</field>
+		<field name="kind">function</field>
+		<field name="action">action_it_confirm()</field>
+	</record>
+
+	<record model="workflow.activity" id="act_done">
+		<field name="wkf_id" ref="wkf_asset_purchase_request" />
+		<field name="name">done</field>
+		<field name="kind">function</field>
+		<field name="flow_stop">True</field>
+		<field name="action">action_done()</field>
+	</record>
+
+	<record model="workflow.transition" id="transition_draft2approving">
+		<field name="act_from" ref="act_draft1" />
+		<field name="act_to" ref="act_approving" />
+		<field name="signal">pr_submit</field>
+	</record>
+	
+	<record model="workflow.transition" id="transition_approved2it">
+		<field name="act_from" ref="act_approving" />
+		<field name="act_to" ref="act_it_confirm" />
+		<field name="condition">ssh_to_who() == 'dep'</field>
+		<field name="signal">pr_pass</field>
+	</record>
+	
+	<record model="workflow.transition" id="transition_approved2ceo">
+		<field name="act_from" ref="act_approving" />
+		<field name="act_to" ref="act_ceo_approving" />
+		<field name="condition">ssh_to_who() == 'ceo'</field>
+		<field name="signal">pr_pass</field>
+	</record>
+
+	<record model="workflow.transition" id="transition_ceo2it">
+		<field name="act_from" ref="act_ceo_approving" />
+		<field name="act_to" ref="act_it_confirm" />
+		<field name="signal">pr_confirm</field>
+	</record>
+	
+	<record model="workflow.transition" id="transition_confirm2done">
+		<field name="act_from" ref="act_it_confirm" />
+		<field name="act_to" ref="act_done" />
+		<field name="signal">it_confirm</field>
+	</record>
+
+	<record model="workflow.transition" id="transition_d2draft">
+		<field name="act_from" ref="act_ceo_approving" />
+		<field name="act_to" ref="act_draft1" />
+		<field name="signal">pr_reject</field>
+	</record>
+	
+	<record model="workflow.transition" id="transition_dep2draft">
+		<field name="act_from" ref="act_approving" />
+		<field name="act_to" ref="act_draft1" />
+		<field name="signal">reject_dec</field>
+	</record>
+
+	<!--资产领借用开始-->
+	<!--领用：申请人——>组长——>IT 
+	借用:申请人——>IT 	-->
+	<record model="workflow" id="wkf_asset_lend_request">
+		<field name="name">hr.wkf.asset.lend</field>
+		<field name="osv">hr.seeed.asset.lend.request</field>
+		<field name="on_create">True</field>
+	</record>
+
+	<record model="workflow.activity" id="act_draft">
+		<field name="wkf_id" ref="wkf_asset_lend_request" />
+		<field name="flow_start">True</field>
+		<field name="name">draft</field>
+		<field name="kind">function</field>
+		<field name="action">action_draft()</field>
+	</record>
+
+	<record model="workflow.activity" id="act_approving_lend">
+		<field name="wkf_id" ref="wkf_asset_lend_request" />
+		<field name="name">dep_approving</field>
+		<field name="kind">function</field>
+		<field name="action">action_submit()</field>
+	</record>
+	
+	<record model="workflow.activity" id="act_it_approving">
+		<field name="wkf_id" ref="wkf_asset_lend_request" />
+		<field name="name">it_approving</field>
+		<field name="kind">function</field>
+		<field name="action">action_it_confirm()</field>
+	</record>
+	<record model="workflow.activity" id="act_done_lend">
+		<field name="wkf_id" ref="wkf_asset_lend_request" />
+		<field name="name">done</field>
+		<field name="kind">function</field>
+		<field name="flow_stop">True</field>
+		<field name="action">action_done()</field>
+	</record>
+
+	<record model="workflow.transition" id="transition_draft2approve">
+		<field name="act_from" ref="act_draft" />
+		<field name="act_to" ref="act_approving_lend" />
+		<!-- <field name="condition">('type' == 'borrow')</field> -->
+		<field name="condition">ssh_to_who() == 'dep'</field>
+		<field name="signal">lr_submit</field>
+	</record>
+
+	<!--借用直接到IT审批-->
+	<record model="workflow.transition" id="transition_draft2it">
+		<field name="act_from" ref="act_draft" />
+		<field name="act_to" ref="act_it_approving" />
+		<!-- <field name="condition">('type' == 'borrow')</field> -->
+		<field name="condition">ssh_to_who() == 'it'</field>
+		<field name="signal">lr_submit</field>
+	</record>
+
+	<!--领用从主管到IT审批-->
+	<record model="workflow.transition" id="transition_approve2it">
+		<field name="act_from" ref="act_approving_lend" />
+		<field name="act_to" ref="act_it_approving" />
+		<field name="signal">lr_to_it</field>
+	</record>
+
+	<record model="workflow.transition" id="transition_it2done">
+		<field name="act_from" ref="act_it_approving" />
+		<field name="act_to" ref="act_done_lend" />
+		<field name="signal">lr_it_confirm</field>
+	</record>
+	<record model="workflow.transition" id="transition_approve2draft">
+		<field name="act_from" ref="act_approving_lend" />
+		<field name="act_to" ref="act_draft" />
+		<field name="signal">reject_dec</field>
+	</record>      
+	<record model="workflow.transition" id="transition_it2draft">
+		<field name="act_from" ref="act_it_approving" />
+		<field name="act_to" ref="act_draft" />
+		<field name="signal">lr_reject</field>
+	</record>      
+	<!---资产领借用结束-->
+    </data>
+</openerp>
