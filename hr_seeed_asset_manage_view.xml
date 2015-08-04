@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- <menuitem name="固定资产管理系统" id="menu_hr_seeed_asset_manage" parent = "menu_hr_seeed_wage_root"/> -->
+        <menuitem name="固定资产管理" id="menu_asset_manage_root" parent= "hr.menu_hr_root" />
+        <wizard
+            id="wizard_asset_import"
+            model="hr.seeed.asset.manage"
+            name="wizard_asset_import"
+            string="导入资产管理明细"
+            menu="True"
+            />
+        
+
+        <record id="hr_seeed_asset_form_view" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.manage.form</field>
+            <field name="model">hr.seeed.asset.manage</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="固定资产管理">
+                    <group colspan="4" col="6">
+                        <field name="yf_asset_id" />
+                       <field name="asset_id" />                       
+                       <field name="ref_department" />
+                       <field name="keeper" /> 
+                       <!-- <field name = "current_user"/> -->
+                       <field name="date_purchased" />
+                       <field name="price" groups="hr_seeed_asset.group_asset_admin"/>
+                       <field name="position" />
+                       <field name="depreciation" groups="hr_seeed_asset.group_asset_admin"/> 
+                       <field name="condition" />                       
+                       <field name="curr_user" />
+                       <field name="deploy" />
+                       <field name="remark" /> 
+                       <!-- <field name="purchase_order" groups="hr_seeed_asset.group_asset_admin"/> -->
+                    </group>
+                    <notebook colspan="4">    
+                    <page string="资产属性">                                          
+                        <field colspan="4" name="attribute_id" nolabel="1" widget="one2many_list" />
+                    </page>
+                    <page string="资产领取记录" >
+                        <field colspan="4" name="fetch_line_id" nolabel="1" widget="one2many_list" />
+                    </page>              
+                    <page string = "资产借出记录">
+                        <field colspan="4" name="lend_line_id" nolabel="1" widget="one2many_list" />
+                    </page>
+                    <page string= "资产维修记录">
+                        <field colspan="4" name="repair_line_id" nolabel="1" widget="one2many_list" />
+                    </page>
+                    <page string="资产使用人变更记录">
+                        <field colspan="4" name="user_change_id" nolabel="1" widget="one2many_list" />
+                    </page>
+                    </notebook>
+                    <group colspan="4" col="6">                                            
+                    
+                    <!-- <button name="submit_to_dec" states="draft" string="提交申请" confirm = "确定提交？"/>
+                    <button name="asset_confirm" states="dep_approving" string="审批通过" confirm = "确认通过?" />
+                    <button name="reject_dec" states="dep_approving" string="退回申请" confirm="确认退回?"/>
+                    <button name="it_confirm" states="approved" string="确认领取" confirm="确认领取?"/> -->                    
+                    
+                </group>
+                </form>
+            </field>
+        </record>
+        <!--资产属性的列表和视图开始-->
+        <record id="hr_seeed_asset_attribute_tree" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.attribute.tree</field>
+            <field name="model">hr.seeed.asset.attribute</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+            <tree string="维修记录" >                      
+                <field name="name" />
+                <field name="value"/>
+                <field name="active" />                
+            </tree>            
+        </field>
+        </record>
+        <record id="hr_seeed_asset_attribute_form" model="ir.ui.view">
+           <field name="name">hr.seeed.asset.attribute.form</field>
+           <field name="model">hr.seeed.asset.attribute</field>
+           <field name="type">form</field> 
+           <field name="arch" type="xml">
+
+            <form string="维修记录">                                                                           
+                <field name="name" />
+                <field name="value"/>
+                <field name="active" />                
+            </form>
+            </field>
+        </record>
+        <!--资产属性的列表和视图结束-->
+        
+        <!--借出记录的列表和视图 开始-->
+        <record id="hr_seeed_asset_lend_line_tree" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.lend.line.tree</field>
+            <field name="model">hr.seeed.asset.lend.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+            <tree string="借出记录" >                      
+                <field name="lend_time" />
+                <field name="lend_to" />
+                <field name="pass_by"/>
+                <field name="est_back_time"/>
+                <field name="real_back_time" />
+                <field name="remark" />
+            </tree>            
+        </field>
+        </record>
+        <record id="hr_seeed_asset_lend_line_form" model="ir.ui.view">
+           <field name="name">hr.seeed.asset.lend.line.form</field>
+           <field name="model">hr.seeed.asset.lend.line</field>
+           <field name="type">form</field> 
+           <field name="arch" type="xml">
+
+            <form string="借出内容">                                                                           
+                <field name="lend_time" />
+                <field name="lend_to" />
+                <field name="pass_by"/>
+                <field name="est_back_time"/>
+                <field name="real_back_time"/>
+                <field name="remark" />
+            </form>
+            </field>
+        </record>
+        <!--结束-->
+        <!--资产领用视图 开始-->
+        <record id="hr_seeed_asset_fetch_line_tree" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.fetch.line.tree</field>
+            <field name="model">hr.seeed.asset.fetch.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="领取记录" >                      
+                    <field name="fetch_time" />         
+                    <field name="fetch_person"/>
+                    <field name="pass_by" /> 
+                </tree>            
+            </field>
+        </record>
+        <record id="hr_seeed_asset_fetch_line_form" model="ir.ui.view">
+           <field name="name">hr.seeed.asset.fetch.line.form</field>
+           <field name="model">hr.seeed.asset.fetch.line</field>
+           <field name="type">form</field> 
+           <field name="arch" type="xml">
+            <form string="领取内容">                                                                           
+                <field name="fetch_time" />         
+                <field name="fetch_person"/>
+                <field name="pass_by" />               
+            </form>
+            </field>
+        </record>
+        <!--结束-->
+        <!--维修记录的列表和视图 开始-->
+        <record id="hr_seeed_asset_repair_line_tree" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.repair.line.tree</field>
+            <field name="model">hr.seeed.asset.repair.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+            <tree string="维修记录" >                      
+                <field name="repair_time" />
+                <field name="cost"/>
+                <field name="within_garantee" />
+                <field name="remark" />
+            </tree>            
+        </field>
+        </record>
+        <record id="hr_seeed_asset_repair_line_form" model="ir.ui.view">
+           <field name="name">hr.seeed.asset.repaire.line.form</field>
+           <field name="model">hr.seeed.asset.repair.line</field>
+           <field name="type">form</field> 
+           <field name="arch" type="xml">
+
+            <form string="维修记录">                                                                           
+                <field name="repair_time" />
+                <field name="cost"/>
+                <field name="within_garantee" />
+                <field name="remark" />
+            </form>
+            </field>
+        </record>
+        <!--结束-->
+        <record id="hr_seeed_asset_tree_view" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.manage.tree</field>
+            <field name="model">hr.seeed.asset.manage</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="固定资产管理">
+                       <field name="yf_asset_id" />
+                       <field name="asset_id" />
+                       <field name="name" />
+                       <field name="curr_user" />
+                       <field name="ref_department" /> 
+                       <field name="position" />
+                       <field name="deploy" />
+                       <!-- <field name = "current_user"/> -->
+                       
+                       <field name="price" groups="hr_seeed_asset.group_asset_admin"/>
+                       <field name="depreciation"  groups="hr_seeed_asset.group_asset_admin"/> 
+                       <field name="condition" />
+                       <field name="date_purchased" /> 
+                       <field name="supplier" />                                             
+                       <field name="remark" />
+                </tree>
+            </field>
+        </record>
+        <!--资产使用人记录的列表和视图开始-->
+        <record id="hr_seeed_asset_user_log_tree" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.user.log.tree</field>
+            <field name="model">hr.seeed.asset.user.log</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+            <tree string="资产使用人记录" >                      
+                <field name="person" />
+                <field name="start_time"/>
+                <field name="end_time" />                
+            </tree>            
+        </field>
+        </record>
+        <record id="hr_seeed_asset_user_log_form" model="ir.ui.view">
+           <field name="name">hr.seeed.asset.user.log.form</field>
+           <field name="model">hr.seeed.asset.user.log</field>
+           <field name="type">form</field> 
+           <field name="arch" type="xml">
+
+            <form string="资产使用人记录">                                                                           
+                <field name="person" />
+                <field name="start_time"/>
+                <field name="end_time" />                
+            </form>
+            </field>
+        </record>
+        <!--资产使用人变更记录列表和视图结束-->
+        <!--资产采购明细开始-->
+        <record id="hr_seeed_asset_purchase_request_line_tree" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.purchase.request.line.tree</field>
+            <field name="model">hr.seeed.asset.purchase.request.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+            <tree string="采购明细" >                      
+                <field name="asset_name" />         
+                <field name="asset_desc"/>
+                <field name="asset_qty" />         
+                
+            </tree>            
+        </field>
+        </record>
+        <record id="hr_seeed_asset_purchase_request_line_form" model="ir.ui.view">
+           <field name="name">hr.seeed.asset.purchase.request.line.form</field>
+           <field name="model">hr.seeed.asset.purchase.request.line</field>
+           <field name="type">form</field> 
+           <field name="arch" type="xml">
+
+            <form string="采购申请">                                                                           
+                <field name="asset_name" />                
+                <field name="asset_qty" />         
+                <field name="asset_desc"/>             
+            </form>
+            </field>
+        </record>
+        <!--资产采购明细结束-->
+        
+        <!--资产领(借)开始-->
+       <record id="hr_seeed_asset_lend_tree_view" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.lend.tree.view</field>
+            <field name="model">hr.seeed.asset.lend.request</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree colors="blue:state=='draft';red:state not in ('draft','done');grey:state=='done'" string="领借资产">                    
+                        <field name="name" />
+                        <field name="create_date" />
+                        <field name="ref_department" />
+                        <field name="applicant" />
+                        <field name="type" />  
+                        <field name="state" />                  
+                </tree>
+            </field>
+        </record> 
+        <record id="hr_seeed_asset_lend_form_view" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.lend.form.view</field>
+            <field name="model">hr.seeed.asset.lend.request</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="领借资产">
+                    <group colspan="4" col="6">
+                        <field name="name" />
+                        <field name="applicant" />
+                        <field name="approver" />
+                        <field name="create_date" />
+                        <field name="ref_department"/>                        
+                        <field name="type" />
+                        <field name="use_method_detail"/>
+                        <field name="processing" />
+                    </group>
+                    <notebook colspan="4">
+                        <page string="领借资产明细">
+                            <field colspan="4" name="lend_lines" nolabel="1" widget="one2many_list" />
+                        </page>
+                    </notebook>
+                    <group colspan="4" col="6">                        
+                        <field name="state" select="1"/>                             
+                        <button name="lr_submit" states="draft" string="提交申请" confirm = "确定提交？"/>
+                        <button name="lr_to_it" states="approving" string="审批通过" confirm = "确认通过?" />
+                        <button name="reject_dec" states="approving" string="退回申请" confirm="确认退回?"/>
+                        <button name="lr_it_confirm" states="it_approving" string="审批通过" confirm="确认领取?"/>
+                        <button name="lr_reject" states="it_approving" string="确认退回" confirm="确认退回?" />
+                        
+                        <!-- <notebook colspan="4">    
+                            <page string="资产采购明细">
+
+                                <field colspan="4" name="request_lines" nolabel="1" widget="one2many_list" />
+                            </page>                                                         
+                        </notebook> -->
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="hr_seeed_asset_lend_request_line_tree_view" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.lend.line.tree.view</field>
+            <field name="model">hr.seeed.asset.lend.request.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="领借资产">
+                    <!-- <group colspan="4" col="6"> -->
+                        <field name="asset_id"/>
+                        <field name="price_unit"/>
+                        <field name="qty"/>
+                        <field name="amount" />
+                    <!-- </group> -->
+                </tree>
+            </field>
+        </record>
+        <record id="hr_seeed_asset_lend_request_line_form_view" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.lend.line.form.view</field>
+            <field name="model">hr.seeed.asset.lend.request.line</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="领借资产">
+                    <group colspan="4" col="6">
+                        <field name="asset_id" on_change="price_change(asset_id)"/>
+                        <field name="price_unit" />
+                        <field name="qty"/>
+                        <field name="amount" />
+                        <field name="est_back_time" />
+                    </group>
+                </form>
+            </field>
+        </record>
+        <!--资产领(借)结束-->
+        <!--资产申请开始-->
+        <record id="hr_seeed_asset_apply_form_view" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.purchase.request.form</field>
+            <field name="model">hr.seeed.asset.purchase.request</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="固定资产申请">
+                    <group colspan="4" col="6">
+                        <field name="name" />
+                       <field name="applicant" />
+                       <field name="approver" />
+                       <field name="department" />
+                       <field name="asset_name" />                       
+                      
+                       <field name="demand" />
+                       <field name="resource" />
+                       <field name="type" /> 
+                       <field name="estimate_price" groups="hr_seeed_asset.group_asset_admin"/>                       
+                       <field name="actual_price" groups="hr_seeed_asset.group_asset_admin"/>
+                    </group>
+                    <notebook colspan="4">    
+                        <page string="资产采购明细">
+
+                            <field colspan="4" name="request_lines" nolabel="1" widget="one2many_list" />
+                        </page>                                                         
+                    </notebook>
+                    <group colspan="4" col="6">
+                        <field name="state" select="1"/>                             
+                        <button name="pr_submit" states="draft" string="提交申请" confirm= "确定提交？"/>
+                        <button name="pr_pass" states="dep_approving" string="审批通过" confirm= "确认通过?" />
+                        <button name="reject_dec" states="dep_approving" string="退回申请" confirm="确认退回?"/>
+                        <button name="pr_confirm" states="ceo_approving" string="审批通过" confirm="确认领取?"/>
+                        <button name="pr_reject" states="ceo_approving" string="确认退回" confirm="确认退回?" />
+                        <button name="it_confirm" states="it_confirming" string="确认领取" confirm="确认领取？" />
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="hr_seeed_asset_apply_tree_view" model="ir.ui.view">
+            <field name="name">hr.seeed.asset.purchase.request.tree</field>
+            <field name="model">hr.seeed.asset.purchase.request</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml" >
+                <tree colors="blue:state=='draft';red:state not in ('draft','done');grey:state=='done'" string="固定资产申请" >    
+                    <field name="name"/>           
+                    <field name="applicant" />         
+                    <field name="approver"/>
+                    <field name="department" />         
+                    <field name="asset_name"/> 
+                    <!-- <field name="qty"/> -->
+
+                    <field name="resource" />
+                    <field name="type" /> 
+                    <field name="estimate_price" />                       
+                    <field name="actual_price" />
+                    <field name="state" />
+                </tree> 
+            </field>
+        </record>
+        <!--资产申请结束-->
+
+        <record id="hr_seeed_asset_manage_action" model="ir.actions.act_window">
+            <field name="name">资产管理明细</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.seeed.asset.manage</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!-- <field name="domain">[]</field> -->
+            <field name="view_id" ref="hr_seeed_asset_tree_view"/>
+        </record>
+        <record id="hr_seeeed_asset_ava_action" model="ir.actions.act_window">
+            <field name="name">可用资产</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.seeed.asset.manage</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('condition','=','instock')]</field>
+            <field name="view_id" ref="hr_seeed_asset_tree_view"/>
+        </record>
+
+        <!-- <record id="hr_draw_asset_action" model="ir.actions.act_window">
+            <field name="name">资产采购申请</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.seeed.asset.purchase.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">['|','|','|',('applicant.user_id','=',uid),('department_manager.user_id','=',uid),('ceo_id.user_id','=',uid),('it_approver.user_id','=',uid),('state','!=','draft')]</field>
+            <field name="view_id" ref="hr_seeed_asset_apply_tree_view"/>
+        </record> -->
+        <record id="hr_all_draw_asset_action" model="ir.actions.act_window">
+            <field name="name">所有资产申请</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.seeed.asset.purchase.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="hr_seeed_asset_apply_tree_view"/>
+        </record>
+        <record id="hr_get_lend_action" model="ir.actions.act_window">
+            <field name="name">资产领(借)申请</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.seeed.asset.lend.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state','!=','draft')]</field>
+            <field name="view_id" ref="hr_seeed_asset_lend_tree_view"/>
+        </record>
+        <record id="hr_asset_of_me" model="ir.actions.act_window">
+            <field name="name">我名下的资产</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.seeed.asset.manage</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('curr_user.user_id','=',uid)]</field>
+            <field name="view_id" ref="hr_seeed_asset_tree_view"/>
+        </record>
+
+    <menuitem name="可用资产" id="hr_seeeed_asset_ava_action" parent="menu_asset_manage_root" action="hr_seeeed_asset_ava_action" groups="base.group_user"/>     
+    <menuitem  id="menu_asset_manage_import" name="批量导入资产明细" action="wizard_asset_import" type="wizard"  parent="menu_asset_manage_root" groups="group_asset_admin"/>
+    <menuitem name="所有资产" id="hr_seeeed_asset_manage_action" parent="menu_asset_manage_root" action="hr_seeed_asset_manage_action" groups="hr_seeed_asset.group_asset_admin"/> 
+        
+    <!-- <menuitem name="我名下的资产" id="menu_asset_of_me" parent= "menu_asset_manage_root" action="hr_asset_of_me"/>
+    <menuitem name="资产申请" id="hr_draw_asset_action" action="hr_draw_asset_action" parent= "menu_asset_manage_root" groups="base.group_user"/>
+    <menuitem id="" name="所有采购申请" action="hr_all_draw_asset_action" parent="account_seeed.menu_account_seeed_root" groups="account_seeed.group_account_seeed_finance"/> 
+    <menuitem name="资产领(借)申请" id="hr_get_lend_action" action="hr_get_lend_action" parent="menu_asset_manage_root" groups="base.group_user" sequence="24"/> -->
+    
+    </data>
+</openerp>
+
